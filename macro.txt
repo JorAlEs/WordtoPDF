@@ -1,0 +1,57 @@
+Sub ExtractPagesToPDF()
+    'Declare variables
+    Dim startPage As Integer
+    Dim endPage As Integer
+    Dim numPages As Integer
+    Dim selectedDoc As Document
+    Dim fileName As String
+    Dim savePath As String
+    
+    'Prompt user to select Word document
+    With Application.FileDialog(msoFileDialogFilePicker)
+        .AllowMultiSelect = False
+        .Title = "Select the Word document to extract pages from"
+        .Filters.Clear
+        .Filters.Add "Word Documents", "*.docx;*.docm;*.doc;*.dotx;*.dotm;*.dot"
+        .FilterIndex = 1
+        
+        If .Show = -1 Then 'if user selects a file
+            fileName = .SelectedItems(1)
+            'Get the path of the selected file
+            savePath = Left(fileName, InStrRev(fileName, "\"))
+        Else 'if user cancels
+            MsgBox "No document selected.", vbCritical
+            Exit Sub
+        End If
+    End With
+    
+    'Open the selected document
+    Set selectedDoc = Documents.Open(fileName)
+    
+    'Start loop
+    Do
+        'Ask user to input number of pages to extract
+        numPages = InputBox("Enter the number of pages to extract to PDF (or enter 0 to stop):")
+        
+        'Check if user wants to stop loop
+        If numPages = 0 Then
+            MsgBox "El proceso ha terminado con éxito", vbInformation
+            Exit Do
+        End If
+        
+        'Ask user to input start page number
+        startPage = InputBox("Enter the starting page number:")
+        
+        'Calculate end page number
+        endPage = startPage + numPages - 1
+        
+        'Extract pages to PDF
+        With selectedDoc
+            .ExportAsFixedFormat OutputFileName:=savePath & "ExtractedPages_" & startPage & "-" & endPage & ".pdf", ExportFormat:=wdExportFormatPDF, Range:=wdExportFromTo, From:=startPage, To:=endPage, OpenAfterExport:=False
+        End With
+        
+    Loop
+    
+    'Close the document
+    selectedDoc.Close savechanges:=False
+End Sub
