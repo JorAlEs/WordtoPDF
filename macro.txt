@@ -35,7 +35,7 @@ Sub ExtractPagesToPDF()
         
         'Check if user wants to stop loop
         If numPages = 0 Then
-            MsgBox "El proceso ha terminado con éxito", vbInformation
+            MsgBox "All is ok", vbInformation
             Exit Do
         End If
         
